@@ -121,6 +121,7 @@ function runSet(setName, fns, isTest, cb) {
 			process.exit(1);
 		}, opts.timeout);
 		if (isAsync(fn)) {
+			debug(`running async`, opts);
 			fn((e) => {
 				if (!timeout._called) {
 					clearTimeout(timeout);
@@ -141,6 +142,7 @@ function runSet(setName, fns, isTest, cb) {
 			});
 		}
 		else {
+			debug(`running sync`, opts);
 			fn();
 			clearTimeout(timeout);
 			logCompletion(isTest, started, setName, istr);
