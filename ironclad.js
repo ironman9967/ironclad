@@ -63,6 +63,7 @@ global.describe = (name, cb) => {
 	afters = [];
 	afterAlls = [];
 	
+	cli.info(`${moduleName} --`);
 	cb(chai.expect);
 	
 	_async.waterfall([
@@ -185,7 +186,7 @@ function runSet(setName, fns, isTest, cb) {
 							else {
 								durMsg = durMsg.green;
 							}
-							console.log('OK: '.green, `${moduleName} ${setName}${istr} passed ${durMsg}`);
+							console.log('OK: '.green, `\t${setName}${istr} passed ${durMsg}`);
 						}
 						else {
 							cli.debug(`${setName}${istr} completed (${roundTo(now() - started, 2)}ms)`);
