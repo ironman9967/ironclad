@@ -50,8 +50,7 @@ exports.load = (fileGlobs, opts) => {
 		let fullPath = path.join(process.cwd(), `./${filepath}`);
 		debug(`trying to require ${fullPath}`, opts);
 		var runnerArgs = [ 
-			//`${path.resolve('./runner.js')}`,
-			'./runner.js',
+			`${path.resolve(path.join(__dirname, './runner.js'))}`,
 			fullPath,
 			optsJson
 		];
