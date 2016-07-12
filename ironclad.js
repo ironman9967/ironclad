@@ -8,9 +8,9 @@ const glob = require('glob');
 const _ = require('lodash');
 const _async = require('async');
 const now = require('performance-now');
-const roundTo = require('round-to');
 
 const debug = require('./debug');
+const duration = require('./duration');
 
 exports.opts = {
 	timeout: [ 't', 'global test timeout', 'number', 2000 ],
@@ -21,7 +21,7 @@ exports.opts = {
 
 let globOpts = {
 	ignore: [ 'index.test.js' ]
-}
+};
 
 let started;
 exports.load = (fileGlobs, opts, cb) => {
@@ -37,7 +37,7 @@ exports.load = (fileGlobs, opts, cb) => {
 	debug(`glob options: ${JSON.stringify(globOpts)}`, opts);
 	let matches = [];
 	_.each(fileGlobs, (fileGlob) => {
-		debug(`trying to match glob ${fileGlob} in ${process.cwd()}`, opts)
+		debug(`trying to match glob ${fileGlob} in ${process.cwd()}`, opts);
 		matches = matches.concat(glob.sync(fileGlob, globOpts));
 	});
 	matches = _.uniq(matches);
@@ -89,7 +89,7 @@ exports.load = (fileGlobs, opts, cb) => {
 				error += String(buf);
 			});
 	}, () => {
-		cli.info(`suite complete (${roundTo(now() - started, 2)}ms)`);
+		cli.info(`suite complete ${duration(now() - started, { slow: -1 })}`);
 		cli.info(`${suite.passed} module${suite.passed === 1 ? '' : 's'} passed`);
 		if (suite.failed > 0) {
 			cli.fatal(`${suite.failed} module${suite.failed === 1 ? '' : 's'} failed (see above for failure messages)`);

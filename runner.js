@@ -3,11 +3,11 @@
 const cli = require('cli').enable('status');
 const _async = require('async');
 const now = require('performance-now');
-const roundTo = require('round-to');
 const chai = require('chai');
 require('colors');
 
 const debug = require('./debug');
+const duration = require('./duration');
 
 let opts = JSON.parse(process.argv[3]);
 
@@ -16,7 +16,6 @@ let moduleName, moduleStarted;
 let beforeAlls, befores, its, afters, afterAlls;
 
 let modulePrefix = `${opts['no-color'] ? `` : `${String.fromCharCode(0x270e)}`} `;
-let moduleSuffix = ` ${opts['no-color'] ? `` : `${String.fromCharCode(0x27a4)}`}`;
 let passedPrefix = `\t${opts['no-color'] ? `` : `${String.fromCharCode(0x2714)}`} it `;
 let failedPrefix = `\t${opts['no-color'] ? `` : `${String.fromCharCode(0x2718)}`} it `;
 let timeoutPrefix =	`\t${opts['no-color'] ? `` : `${String.fromCharCode(0x29d6)}`} it `;
@@ -24,7 +23,7 @@ let timeoutPrefix =	`\t${opts['no-color'] ? `` : `${String.fromCharCode(0x29d6)}
 global.describe = (name, cb) => {
 	moduleStarted = now();
 	moduleName = name;
-	debug(`${moduleName} started at ${roundTo(moduleStarted, 2)}ms`, opts);
+	debug(`${moduleName} started at ${duration(moduleStarted, { slow: -1 })}`, opts);
 	
 	beforeAlls = [];
 	befores = [];
@@ -32,7 +31,7 @@ global.describe = (name, cb) => {
 	afters = [];
 	afterAlls = [];
 	
-	info(`${modulePrefix}${moduleName}${moduleSuffix}`);
+	info(`${modulePrefix}${moduleName}`);
 	cb(chai.expect);
 	
 	_async.waterfall([
@@ -82,7 +81,7 @@ global.describe = (name, cb) => {
 			}
 		}
 	], () => {
-		info(`finished ${its.length} test${its.length === 1 ? '' : 's'} (${roundTo(now() - moduleStarted, 2)}ms)`);
+		info(`finished ${its.length} test${its.length === 1 ? '' : 's'}`);
 	});
 }
 
@@ -116,8 +115,8 @@ function runSet(setName, fns, isTest, cb) {
 		let istr = fns.length === 1 ? '' : ` ${i + 1}`;
 		let started = now();
 		let timeout = setTimeout(() => {
-			let msg = `${timeoutPrefix}${setName}${istr} timed out (${roundTo(now() - started, 2)}ms)`;
-			console.log('FAILED:'.red, msg);
+			let msg = `${timeoutPrefix}${setName}${istr} ${duration(now() - started, opts)}`;
+			console.log('TIMEOUT'.red + ':', msg);
 			process.exit(1);
 		}, opts.timeout);
 		if (isAsync(fn)) {
@@ -129,7 +128,7 @@ function runSet(setName, fns, isTest, cb) {
 						if (isTest) {
 							msg = `it ${msg}`;
 						}
-						console.log('FAILED:'.red, msg);
+						console.log('FAILED'.red + ':', msg);
 						process.exit(1);
 					}
 					else  {
@@ -157,24 +156,13 @@ function isAsync(fn) {
 
 function logCompletion(isTest, started, setName, istr) {
 	if (isTest) {
-		let dur = now() - started;
-		let durMsg = `(${roundTo(dur, 2)}ms)`;
-		if (dur > opts.timing) {
-			durMsg = durMsg.red;
-		}
-		else if (dur > (opts.timing / 2)) {
-			durMsg = durMsg.yellow;
-		}
-		else {
-			durMsg = durMsg.green;
-		}
-		console.log('PASSED:'.green, `${passedPrefix}${setName}${istr} ${durMsg}`);
+		console.log('PASSED'.green + ':', `${passedPrefix}${setName}${istr} ${duration(now() - started, opts)}`);
 	}
 	else {
-		debug(`${setName}${istr} completed (${roundTo(now() - started, 2)}ms)`, opts);
+		debug(`${setName}${istr} completed ${duration(now() - started, opts)}`, opts);
 	}
 }
 
 function info(msg) {
-	console.log('INFO:'.yellow, msg);
+	console.log('INFO'.yellow + ':', msg);
 }
