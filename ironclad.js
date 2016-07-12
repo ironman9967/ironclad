@@ -34,7 +34,7 @@ exports.load = (fileGlobs, opts) => {
 	cli.debug(`glob options: ${JSON.stringify(globOpts)}`);
 	let matches = [];
 	_.each(fileGlobs, (fileGlob) => {
-		cli.debug(`trying to match glob ${fileGlob} from ${__dirname}`)
+		cli.debug(`trying to match glob ${fileGlob} from ${process.cwd()}`)
 		matches = matches.concat(glob.sync(fileGlob, globOpts));
 	});
 	matches = _.uniq(matches);
@@ -42,7 +42,7 @@ exports.load = (fileGlobs, opts) => {
 		cli.info('0 tests ran');
 	}
 	_.each(matches, (filepath) => {
-		let reqPath = path.join(__dirname, `./${filepath}`);
+		let reqPath = path.join(process.cwd(), `./${filepath}`);
 		cli.info(`trying to require ${reqPath}`);
 		require(reqPath);
 	});
