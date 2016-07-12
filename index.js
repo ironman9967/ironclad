@@ -10,7 +10,7 @@ cli.enable('version').enable('status');
 
 cli.setApp(app.name, app.version);
 
-cli.parse(ironclad.cliOpts);
+cli.parse(ironclad.opts);
 
 cli.main((args, opts) => {
     ironclad.load(args, opts);

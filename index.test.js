@@ -4,10 +4,11 @@ const _ = require('lodash');
 
 const ironclad = require('./ironclad');
 
-let cliOpts = {};
-for (let opt in ironclad.cliOpts) {
-	cliOpts[opt] = ironclad.cliOpts[opt][3];
+let opts = {};
+for (let opt in ironclad.opts) {
+	opts[opt] = ironclad.opts[opt][3];
 }
-cliOpts.force = true;
-cliOpts.slow = 50;
-ironclad.load([], cliOpts);
+opts.force = true;
+opts.debug = true;
+
+ironclad.load([], opts);

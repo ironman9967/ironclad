@@ -34,7 +34,7 @@ describe('module', (expect) => {
 	
 	it('should do something', (done) => {
 		setTimeout(() => {
-			expect(true).to.be.true;
+			expect(true).to.be.false;
 			console.log('it async task');
 			done();
 		}, 10);
