@@ -1,3 +1,4 @@
+'use strict'
 
 const cli = require('cli').enable('status');
 const _async = require('async');
