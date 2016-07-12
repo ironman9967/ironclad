@@ -117,7 +117,8 @@ global.describe = (name, cb) => {
 			throw e;
 		}
 		else {
-			cli.info(`finished ${its.length} tests (${roundTo(now() - moduleStarted, 2)}ms)`);
+			let pural = its.length === 1 ? '' : 's';
+			cli.info(`finished ${its.length} test${pural} (${roundTo(now() - moduleStarted, 2)}ms)`);
 		}
 	});
 }
