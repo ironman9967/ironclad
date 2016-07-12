@@ -82,6 +82,7 @@ global.describe = (name, cb) => {
 		}
 	], () => {
 		info(`finished ${its.length} test${its.length === 1 ? '' : 's'}`);
+		process.exit(0);
 	});
 }
 
