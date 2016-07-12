@@ -42,7 +42,9 @@ exports.load = (fileGlobs, opts) => {
 		cli.info('0 tests ran');
 	}
 	_.each(matches, (filepath) => {
-		require(`./${filepath}`);
+		let reqPath = path.join(__dirname, `./${filepath}`);
+		cli.info(`trying to require ${reqPath}`);
+		require(reqPath);
 	});
 };
 
