@@ -8,7 +8,8 @@
     "ironclad": "index.js"
   },
   "scripts": {
-    "test": "node index.test.js"
+    "test": "node index.test.js",
+    "ppp": "npm version patch && git push && npm publish"
   },
   "repository": {
     "type": "git",
