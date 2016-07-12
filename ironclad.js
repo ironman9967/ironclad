@@ -43,7 +43,7 @@ exports.load = (fileGlobs, opts) => {
 	}
 	_.each(matches, (filepath) => {
 		let reqPath = path.join(process.cwd(), `./${filepath}`);
-		cli.info(`trying to require ${reqPath}`);
+		cli.debug(`trying to require ${reqPath}`);
 		require(reqPath);
 	});
 };

@@ -1,6 +1,6 @@
 {
   "name": "ironclad",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "an es6 ready testing rig",
   "main": "index.js",
   "preferGlobal": "true",
