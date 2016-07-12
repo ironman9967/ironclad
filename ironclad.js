@@ -13,7 +13,7 @@ require('colors');
 
 exports.cliOpts = {
 	timeout: [ 't', 'global test timeout', 'number', 2000 ],
-	timing: [ 's', 'slow test threshold', 'number', 50 ],
+	slow: [ 's', 'slow test threshold', 'number', 50 ],
 	force: [ false, 'force tests to run regardless of failure', 'bool', false ]
 };
 
@@ -34,6 +34,7 @@ exports.load = (fileGlobs, opts) => {
 	cli.debug(`glob options: ${JSON.stringify(globOpts)}`);
 	let matches = [];
 	_.each(fileGlobs, (fileGlob) => {
+		cli.debug(`trying to match glob ${fileGlob} from ${__dirname}`)
 		matches = matches.concat(glob.sync(fileGlob, globOpts));
 	});
 	matches = _.uniq(matches);
@@ -46,23 +47,13 @@ exports.load = (fileGlobs, opts) => {
 };
 
 let moduleName, moduleStarted;
-// let testName, testStarted;
-// let beforeAllStarted, beforeStarted, afterStarted, afterAllStarted;
 
 let beforeAlls, befores, its, afters, afterAlls;
 
 global.describe = (name, cb) => {
 	moduleStarted = now();
 	moduleName = name;
-	cli.debug(`${moduleName} started at ${roundTo(moduleStarted, 2)}`);
-	
-	// testName = void 0;
-	
-	// beforeAllStarted = void 0;
-	// beforeStarted = void 0;
-	// testStarted = void 0;
-	// afterStarted = void 0;
-	// afterAllStarted = void 0;
+	cli.debug(`${moduleName} started at ${roundTo(moduleStarted, 2)}ms`);
 	
 	beforeAlls = [];
 	befores = [];
@@ -121,6 +112,9 @@ global.describe = (name, cb) => {
 	], (e) => {
 		if (e !== null) {
 			throw e;
+		}
+		else {
+			cli.info(`finished ${its.length} tests (${roundTo(now() - moduleStarted, 2)}ms)`);
 		}
 	});
 }

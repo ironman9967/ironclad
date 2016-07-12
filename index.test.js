@@ -9,5 +9,5 @@ for (let opt in ironclad.cliOpts) {
 	cliOpts[opt] = ironclad.cliOpts[opt][3];
 }
 cliOpts.force = true;
-cliOpts.timing = 50;
+cliOpts.slow = 50;
 ironclad.load([], cliOpts);
