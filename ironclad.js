@@ -24,7 +24,7 @@ let globOpts = {
 }
 
 let started;
-exports.load = (fileGlobs, opts) => {
+exports.load = (fileGlobs, opts, cb) => {
 	let optsJson = JSON.stringify(opts);
 	if (_.isEmpty(fileGlobs)) {
 		cli.info('*****   RUNNING SAMPLE TESTS   *****');
@@ -93,6 +93,9 @@ exports.load = (fileGlobs, opts) => {
 		cli.info(`${suite.passed} module${suite.passed === 1 ? '' : 's'} passed`);
 		if (suite.failed > 0) {
 			cli.fatal(`${suite.failed} module${suite.failed === 1 ? '' : 's'} failed (see above for failure messages)`);
+		}
+		else {
+			process.exit(0);
 		}
 	});
 };
