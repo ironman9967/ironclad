@@ -14,6 +14,12 @@ let moduleName, moduleStarted;
 
 let beforeAlls, befores, its, afters, afterAlls;
 
+let modulePrefix = `${opts['no-color'] ? `` : `${String.fromCharCode(0x270e)}`} `;
+let moduleSuffix = ` ${opts['no-color'] ? `` : `${String.fromCharCode(0x27a4)}`}`;
+let passedPrefix = `\t${opts['no-color'] ? `` : `${String.fromCharCode(0x2714)}`} it `;
+let failedPrefix = `\t${opts['no-color'] ? `` : `${String.fromCharCode(0x2718)}`} it `;
+let timeoutPrefix =	`\t${opts['no-color'] ? `` : `${String.fromCharCode(0x29d6)}`} it `;
+
 global.describe = (name, cb) => {
 	moduleStarted = now();
 	moduleName = name;
@@ -25,14 +31,14 @@ global.describe = (name, cb) => {
 	afters = [];
 	afterAlls = [];
 	
-	cli.info(`${moduleName} --`);
+	info(`${modulePrefix}${moduleName}${moduleSuffix}`);
 	cb(chai.expect);
 	
 	_async.waterfall([
 		(cb) => {
 			if (its.length > 0) {
-				runSet('beforeAll', beforeAlls, false, (e) => {
-					cb(e);
+				runSet('beforeAll', beforeAlls, false, () => {
+					cb(null);
 				});
 			}
 			else {
@@ -43,45 +49,39 @@ global.describe = (name, cb) => {
 			_async.eachSeries(its, (it, cb) => {
 				_async.waterfall([
 					(cb) => {
-						runSet('beforeEach', befores, false, (e) => {
-							cb(e);
+						runSet('beforeEach', befores, false, () => {
+							cb(null);
 						});
 					},
 					(cb) => {
-						runSet(it.description, [ it.fn ], true, (e) => {
-							cb(e);
+						runSet(it.description, [ it.fn ], true, () => {
+							cb(null);
 						});
 					},
 					(cb) => {
-						runSet('afterEach', afters, false, (e) => {
-							cb(e);
+						runSet('afterEach', afters, false, () => {
+							cb(null);
 						});
 					}
 				], (e) => {
-					cb(e);
+					cb(null);
 				});
 			}, (e) => {
-				cb(e);
+				cb(null);
 			});
 		},
 		(cb) => {
 			if (its.length > 0) {
-				runSet('afterAll', afterAlls, false, (e) => {
-					cb(e);
+				runSet('afterAll', afterAlls, false, () => {
+					cb(null);
 				});
 			}
 			else {
 				cb(null);
 			}
 		}
-	], (e) => {
-		if (e !== null) {
-			throw e;
-		}
-		else {
-			let pural = its.length === 1 ? '' : 's';
-			cli.info(`finished ${its.length} test${pural} (${roundTo(now() - moduleStarted, 2)}ms)`);
-		}
+	], () => {
+		info(`finished ${its.length} test${its.length === 1 ? '' : 's'} (${roundTo(now() - moduleStarted, 2)}ms)`);
 	});
 }
 
@@ -111,67 +111,42 @@ global.afterAll = (fn) => {
 require(process.argv[2]);
 
 function runSet(setName, fns, isTest, cb) {
-	let failed = false;
 	_async.eachOfSeries(fns, (fn, i, cb) => {
-		if (opts.force || !failed) {
-			let istr = fns.length === 1 ? '' : ` ${i + 1}`;
-			let started = now();
-			let timeout = setTimeout(() => {
-				let msg = `${setName}${istr} timed out after ${roundTo(now() - started, 2)}ms`;
-				if (opts.force) {
-					cli.error(msg);
-					cb(null);
-				}
-				else {
-					cli.fatal(msg);
-				}
-			}, opts.timeout);
-			if (isAsync(fn)) {
-				fn((e) => {
-					if (!timeout._called) {
-						if (e !== void 0 && e !== null) {
-							failed = true;
-							let msg = `${setName}${istr} failed:\n${e.stack === void 0 ? e : e.stack}`;
-							if (opts.force) {
-								cli.error(msg);
-							}
-							else {
-								cli.fatal(msg);
-							}
+		let istr = fns.length === 1 ? '' : ` ${i + 1}`;
+		let started = now();
+		let timeout = setTimeout(() => {
+			let msg = `${timeoutPrefix}${setName}${istr} timed out (${roundTo(now() - started, 2)}ms)`;
+			console.log('FAILED:'.red, msg);
+			process.exit(1);
+		}, opts.timeout);
+		if (isAsync(fn)) {
+			fn((e) => {
+				if (!timeout._called) {
+					clearTimeout(timeout);
+					if (e !== void 0 && e !== null) {
+						let msg = `${failedPrefix}${setName}${istr} failed:\n${e.stack === void 0 ? e : e.stack}`;
+						if (isTest) {
+							msg = `it ${msg}`;
 						}
-						else if (isTest) {
-							let dur = now() - started;
-							let durMsg = `(${roundTo(dur, 2)}ms)`;
-							if (dur > opts.timing) {
-								durMsg = durMsg.red;
-							}
-							else if (dur > (opts.timing / 2)) {
-								durMsg = durMsg.yellow;
-							}
-							else {
-								durMsg = durMsg.green;
-							}
-							console.log('OK: '.green, `\t${setName}${istr} passed ${durMsg}`);
-						}
-						else {
-							debug(`${setName}${istr} completed (${roundTo(now() - started, 2)}ms)`, opts);
-						}
-						clearTimeout(timeout);
+						console.log('FAILED:'.red, msg);
+						process.exit(1);
 					}
-					cb(null);
-				});
-			}
-			else {
-				fn();
-				clearTimeout(timeout);
+					else  {
+						logCompletion(isTest, started, setName, istr);
+					}
+					clearTimeout(timeout);
+				}
 				cb(null);
-			}
+			});
 		}
 		else {
+			fn();
+			clearTimeout(timeout);
+			logCompletion(isTest, started, setName, istr);
 			cb(null);
 		}
-	}, (e) => {
-		cb(e);
+	}, () => {
+		cb();
 	});
 }
 
@@ -179,3 +154,26 @@ function isAsync(fn) {
 	return /\([a-zA-Z][\w\d]*\){1}/.test(fn.toString().split('\n')[0]);
 }
 
+function logCompletion(isTest, started, setName, istr) {
+	if (isTest) {
+		let dur = now() - started;
+		let durMsg = `(${roundTo(dur, 2)}ms)`;
+		if (dur > opts.timing) {
+			durMsg = durMsg.red;
+		}
+		else if (dur > (opts.timing / 2)) {
+			durMsg = durMsg.yellow;
+		}
+		else {
+			durMsg = durMsg.green;
+		}
+		console.log('PASSED:'.green, `${passedPrefix}${setName}${istr} ${durMsg}`);
+	}
+	else {
+		debug(`${setName}${istr} completed (${roundTo(now() - started, 2)}ms)`, opts);
+	}
+}
+
+function info(msg) {
+	console.log('INFO:'.yellow, msg);
+}

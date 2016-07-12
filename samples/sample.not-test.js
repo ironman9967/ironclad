@@ -1,6 +1,6 @@
 'use strict'
 
-describe('module', (expect) => {
+describe('sample-1', (expect) => {
 	beforeAll((done) => {
 		setTimeout(() => {
 			console.log('beforeAll async task 1');

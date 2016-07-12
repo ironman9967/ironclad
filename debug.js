@@ -8,6 +8,6 @@ module.exports = (msg, opts) => {
 			prefix = prefix.reset;
 			msg = msg.reset;
 		}
-		console.log(`${prefix}: ${msg}`);
+		console.log(`${prefix}${msg}`);
 	}
 }
