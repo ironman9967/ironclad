@@ -1,34 +1,43 @@
 {
-  "name": "ironclad",
-  "version": "0.2.3",
-  "description": "an es6 ready testing rig",
-  "main": "index.js",
-  "preferGlobal": "true",
-  "bin": {
-    "ironclad": "index.js"
-  },
-  "scripts": {
-    "test": "node index.test.js",
-    "ppp": "npm version patch && git push && npm publish"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/ironman9967/ironclad.git"
-  },
-  "author": "Tyson Hester",
-  "license": "Apache-2.0",
-  "bugs": {
-    "url": "https://github.com/ironman9967/ironclad/issues"
-  },
-  "homepage": "https://github.com/ironman9967/ironclad#readme",
-  "dependencies": {
-    "async": "^2.0.0-rc.6",
-    "chai": "^3.5.0",
-    "cli": "^0.11.2",
-    "colors": "^1.1.2",
-    "glob": "^7.0.5",
-    "lodash": "^4.13.1",
-    "performance-now": "^0.2.0",
-    "round-to": "^1.1.0"
-  }
+	"name": "ironclad",
+	"version": "0.2.3",
+	"description": "an es6 ready testing rig",
+	"main": "index.js",
+	"preferGlobal": "true",
+	"bin": {
+		"ironclad": "index.js"
+	},
+	"scripts": {
+		"test": "node index.test.js",
+		"ppp": "npm version patch && git push && npm publish"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/ironman9967/ironclad.git"
+	},
+	"author": "Tyson Hester",
+	"license": "Apache-2.0",
+	"bugs": {
+		"url": "https://github.com/ironman9967/ironclad/issues"
+	},
+	"homepage": "https://github.com/ironman9967/ironclad#readme",
+	"dependencies": {
+		"async": "^2.0.0-rc.6",
+		"chai": "^3.5.0",
+		"cli": "^0.11.2",
+		"colors": "^1.1.2",
+		"glob": "^7.0.5",
+		"lodash": "^4.13.1",
+		"performance-now": "^0.2.0",
+		"round-to": "^1.1.0"
+	},
+	"keywords": [
+		"test",
+		"testing",
+		"assert",
+		"assertion",
+		"tdd",
+		"bdd",
+		"es6"
+	]
 }
