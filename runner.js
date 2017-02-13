@@ -24,16 +24,16 @@ global.describe = (name, cb) => {
 	moduleStarted = now();
 	moduleName = name;
 	debug(`${moduleName} started at ${duration(moduleStarted, { slow: -1 })}`, opts);
-	
+
 	beforeAlls = [];
 	befores = [];
 	its = [];
 	afters = [];
 	afterAlls = [];
-	
+
 	info(`${modulePrefix}${moduleName}`);
 	cb(chai.expect);
-	
+
 	_async.waterfall([
 		(cb) => {
 			if (its.length > 0) {
@@ -120,7 +120,12 @@ function runSet(setName, fns, isTest, cb) {
 			console.log('TIMEOUT'.red + ':', msg);
 			process.exit(1);
 		}, opts.timeout);
-		if (isAsync(fn)) {
+		if (fn == void 0 || fn == null) {
+			clearTimeout(timeout);
+			logCompletion(isTest, started, setName, istr);
+			cb(null);
+		}
+		else if (isAsync(fn)) {
 			debug(`running async`, opts);
 			fn((e) => {
 				if (!timeout._called) {
